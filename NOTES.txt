@@ -1,0 +1,1 @@
+"#pragma once" is used even not standard, because whatever, most platforms support it
