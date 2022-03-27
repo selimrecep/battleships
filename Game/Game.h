@@ -2,4 +2,4 @@
 class Game {
 public:
   Game();
-}
+};
