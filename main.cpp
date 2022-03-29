@@ -12,5 +12,6 @@ int main() {
   gManager.askForNames();
 
   int a;
+  std::cout << "Press a key and hit enter to exit (no white space please :) )\n";
   std::cin >> a;
 }

@@ -16,6 +16,8 @@ public:
   PlayerColor color;
   int remainingShipCount{ shipTypeCount };
 
+  static PlayerColor opposeTeamColorS(PlayerColor color);
+
   Player(PlayerColor color);
   void setName(std::string name);
   PlayerColor opposeTeamColor();

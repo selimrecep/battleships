@@ -39,7 +39,7 @@ void Game::placeShips(const PlayerColor color, const shipCoordinates_t<shipTypeC
 }
 
 
-ShipHitState Game::attackPoint(const PlayerColor attackerColor, Point point) {
+ShipHitState Game::attackPoint(const PlayerColor attackerColor, Point point, bool& isShipSunk) {
   Player& attacker{ getPlayer(attackerColor) };
   const PlayerColor defenderColor{ attacker.opposeTeamColor() };
   Player& defender{ getPlayer(defenderColor) };
@@ -56,8 +56,10 @@ ShipHitState Game::attackPoint(const PlayerColor attackerColor, Point point) {
 
     atkHintGrid[point].state = HintCellState::hit;
     if (ship->hitTimes == ship->shipLength) {
+      isShipSunk = true;
       ship->hasSunk = true;
       defender.remainingShipCount--;
+
 
       if (defender.remainingShipCount == 0) {
         endGame(attacker);
@@ -75,4 +77,12 @@ ShipHitState Game::attackPoint(const PlayerColor attackerColor, Point point) {
 void Game::endGame(const Player& winner) {
   gameEnded = true;
   winnerColor = winner.color;
+}
+
+bool Game::isGameEnded() {
+  return gameEnded;
+}
+
+PlayerColor Game::getWinnerColor() {
+  return winnerColor;
 }

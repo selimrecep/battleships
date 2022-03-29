@@ -33,6 +33,11 @@ PlayerColor Player::opposeTeamColor() {
   return static_cast<PlayerColor>(!static_cast<int>(color));
 }
 
+PlayerColor Player::opposeTeamColorS(PlayerColor color) {
+  // Ngl a bit dirty :)
+  return static_cast<PlayerColor>(!static_cast<int>(color));
+}
+
 Ship* Player::getShip(ShipType shipType) {
   return &ships[static_cast<int>(shipType)];
 }

@@ -30,6 +30,8 @@ public:
   Player& getPlayer(const PlayerColor color);
   void createPlayers(std::string redName, std::string blueName);
   void placeShips(const PlayerColor color, const shipCoordinates_t<shipTypeCount>& compoundCoords);
+  bool isGameEnded();
+  PlayerColor getWinnerColor();
 
-  ShipHitState attackPoint(const PlayerColor attackerColor, Point point);
+  ShipHitState attackPoint(const PlayerColor attackerColor, Point point, bool& hasShipSunk);
 };

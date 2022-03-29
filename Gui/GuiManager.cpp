@@ -39,8 +39,14 @@ void GuiManager::askForNames() {
 void GuiManager::beginGame() {
   cBuffer.clearScreen();
   registerShips();
+  PlayerColor color{ PlayerColor::red };
 
-  printAllGrids(PlayerColor::red);
+  while (!game.isGameEnded()) {
+    oneRound(color);
+    color = Player::opposeTeamColorS(color);
+  }
+  Player& winner = game.getPlayer(game.getWinnerColor());
+  std::cout << "The winner is " << ((game.getWinnerColor() == PlayerColor::red) ? "red" : "blue") << "(a.k.a.) " << winner.getPlayerName();
 }
 void GuiManager::registerShips() {
   registerShip(PlayerColor::red);
@@ -98,6 +104,31 @@ void GuiManager::registerShip(const PlayerColor color) {
   std::cout << "\n-------------\n";
 }
 
+Point GuiManager::getCoordinateFromUser() {
+  int row{};
+  int column{};
+  bool invalid{ false };
+  std::string input{};
+  do {
+    std::cout << "Enter coordinate: ";
+    std::cin >> input;
+    char letterCh{ input[0] }, numberCh{ input[1] };
+    if (letterCh < 'A' || letterCh > 'J' || numberCh < '0' || numberCh > '9') {
+      std::cout << "Invalid input.\n";
+      invalid = true;
+    }
+    else {
+      invalid = false;
+      row = input[0] - 'A';
+      column = input[1] - '0';
+
+    }
+  } while (invalid);
+
+  Point point{ column, row };
+  return point;
+}
+
 void GuiManager::getFullLineText(std::string& line) {
   // Ignore any leading whitespace left
   // I still don't know enough about std::ws's purpose here
@@ -105,10 +136,13 @@ void GuiManager::getFullLineText(std::string& line) {
   std::getline(std::cin >> std::ws, line);
 }
 
-void GuiManager::printAllGrids(const PlayerColor color) {
+void GuiManager::oneRound(const PlayerColor color) {
   using std::this_thread::sleep_for;
   using std::chrono::seconds;
   Player& player = game.getPlayer(color);
+  Player& opposePlayer = game.getPlayer(player.opposeTeamColor());
+
+  GameGrid& defendingGrid = game.getGameGrid(opposePlayer.color);
 
   std::cout << "It is " << player.getPlayerName() << "'s turn. Other player should avert their eyes.\n";
   sleep_for(seconds(0));
@@ -118,6 +152,23 @@ void GuiManager::printAllGrids(const PlayerColor color) {
 
   std::cout << "----- YOUR HINT TABLE ----\n";
   printHintGrid(color);
+
+  Point point{ getCoordinateFromUser() };
+  bool hasShipSunk;
+  ShipHitState state{ game.attackPoint(player.color, point, hasShipSunk) };
+
+  if (state == ShipHitState::HIT) {
+    std::cout << "It is a hit!\n";
+    if (hasShipSunk) {
+      std::cout << "Other player: \"You have sunken my ship!\"\n";
+    }
+  }
+  else if (state == ShipHitState::MISS) {
+    std::cout << "It is a miss.\n";
+  }
+  else if (state == ShipHitState::INVALID_POINT) {
+    std::cout << "Invalid point. Your turn is forfeited.\n";
+  }
 }
 
 void GuiManager::printHintGrid(const PlayerColor color) {

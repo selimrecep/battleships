@@ -4,7 +4,6 @@
 #include "../Game/Game.h"
 #include "ConsoleBuffer.h"
 
-
 class GuiManager {
 private:
   Game& game;
@@ -19,8 +18,10 @@ public:
 
   void printGameGrid(const PlayerColor color);
   void printHintGrid(const PlayerColor color);
-  void printAllGrids(const PlayerColor color);
+  void oneRound(const PlayerColor color);
 
   void registerShips();
   void registerShip(const PlayerColor color);
+
+  Point getCoordinateFromUser();
 };
