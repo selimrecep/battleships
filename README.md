@@ -5,3 +5,4 @@
 - [ ] Fix ConsoleBuffer class
 - [ ] Refactor base code
 - [ ] Make use of heap with smart pointers
+- [x] Complete base code
