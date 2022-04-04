@@ -92,8 +92,9 @@ void ComputerAI::feedBackLastHit(bool hit) {
       int debug{0};
       do {
         rot = getNextRotation(rot);
+        /*
         if (debug > 10)
-          std::cout << "wth ";
+          std::cout << "hmm ";*/
         // Actually it is a game grid we shouldn't been checked but it doesn't
         // matter since they have same size
         invalid =
