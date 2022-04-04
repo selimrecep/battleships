@@ -7,3 +7,4 @@
 - [ ] Make use of heap with smart pointers
 - [x] Complete base code
 - [x] Add simple computer player
+- [ ] Add CMake file (Soon™) 
