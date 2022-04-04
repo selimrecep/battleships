@@ -1,9 +1,9 @@
 #include "GameGrid.h"
-#include "../Ships/ShipHitState.h"
 #include "../Ships/Ship.h"
+#include "../Ships/ShipHitState.h"
 
 Point GameGrid::getDifferencePoint(Rotation rot) {
-  Point point{ 0, 0 };
+  Point point{0, 0};
 
   switch (rot) {
   case Rotation::up:
@@ -18,14 +18,19 @@ Point GameGrid::getDifferencePoint(Rotation rot) {
   case Rotation::right:
     point.x = 1;
     break;
+  default:
+    // Oops ;)
+    break;
   }
   return point;
 }
 bool GameGrid::fillCellsWithShip(const ShipCoordinate& shipCoordinate) {
 
-  Point point{ shipCoordinate.prCompund.point };
-  Point changerPoint{ GameGrid::getDifferencePoint(shipCoordinate.prCompund.rot) };
-  if (!validCoordinate(shipCoordinate.prCompund, shipCoordinate.ship->type))  return false;
+  Point point{shipCoordinate.prCompund.point};
+  Point changerPoint{
+      GameGrid::getDifferencePoint(shipCoordinate.prCompund.rot)};
+  if (!validCoordinate(shipCoordinate.prCompund, shipCoordinate.ship->type))
+    return false;
   for (int i = 0; i < shipCoordinate.ship->shipLength; ++i) {
     getCellByPoint(point).shipOccupying = shipCoordinate.ship;
     point.x += changerPoint.x;
@@ -39,7 +44,7 @@ ShipHitState GameGrid::tryHitPoint(Point point, Ship** ship) {
   if (!validPoint(point))
     return ShipHitState::INVALID_POINT;
 
-  Ship* tempShip{ getCellByPoint(point).shipOccupying };
+  Ship* tempShip{getCellByPoint(point).shipOccupying};
 
   if (tempShip == nullptr)
     return ShipHitState::MISS;
@@ -48,21 +53,26 @@ ShipHitState GameGrid::tryHitPoint(Point point, Ship** ship) {
   return ShipHitState::HIT;
 }
 
-bool GameGrid::validCoordinate(const PointRotCompound& compound, const ShipType shipType) {
-  const Point& point{ compound.point };
-  const Rotation& rot{ compound.rot };
-  int length{ shipLengths[static_cast<int>(shipType)] };
+bool GameGrid::validCoordinate(const PointRotCompound& compound,
+                               const ShipType shipType) {
+  const Point& point{compound.point};
+  const Rotation& rot{compound.rot};
+  int length{shipLengths[static_cast<int>(shipType)]};
 
   if (!validPoint(point))
     return false;
 
-  const Point changerPoint{ GameGrid::getDifferencePoint(rot) };
+  const Point changerPoint{GameGrid::getDifferencePoint(rot)};
   // Haven't fully learnt operator overloads yet
-  const Point otherCorner{ point.x + changerPoint.x * length, point.y + changerPoint.y * length };
+  const Point otherCorner{point.x + changerPoint.x * (length - 1),
+                          point.y + changerPoint.y * (length - 1)};
   if (!validPoint(otherCorner))
     return false;
-  int i = 0;
-  Point temp{ point };
+
+  int i = 1;
+  Point temp{point};
+  if (getCellByPoint(temp).shipOccupying != nullptr)
+    return false;
   while (i < length) {
     temp.x += changerPoint.x;
     temp.y += changerPoint.y;

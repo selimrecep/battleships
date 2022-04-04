@@ -1,14 +1,11 @@
+#include "Game.h"
+#include "Board/GameGrid.h"
+#include "Ships/Ship.h"
+#include "Teams/PlayerColor.h"
 #include <cassert>
 #include <string>
-#include "Board/GameGrid.h"
-#include "Game.h"
-#include "Teams/PlayerColor.h"
-#include "Ships/Ship.h"
 
-
-Game::Game() : players{ PlayerColor::red, PlayerColor::blue } {
-}
-
+Game::Game() : players{PlayerColor::red, PlayerColor::blue} {}
 
 Player& Game::getPlayer(const PlayerColor color) {
   return players[static_cast<int>(color)];
@@ -19,10 +16,11 @@ GameGrid& Game::getGameGrid(const PlayerColor color) {
 HintGrid& Game::getHintGrid(const PlayerColor color) {
   return hintGrids[static_cast<int>(color)];
 }
+
 void Game::createPlayers(std::string redName, std::string blueName) {
   assert(!gameInitialized && "Game is already initialized.");
-  Player& redPlayer{ getPlayer(PlayerColor::red) };
-  Player& bluePlayer{ getPlayer(PlayerColor::blue) };
+  Player& redPlayer{getPlayer(PlayerColor::red)};
+  Player& bluePlayer{getPlayer(PlayerColor::blue)};
 
   redPlayer.setName(std::move(redName));
   bluePlayer.setName(std::move(blueName));
@@ -30,24 +28,28 @@ void Game::createPlayers(std::string redName, std::string blueName) {
   gameInitialized = true;
 }
 
-void Game::placeShips(const PlayerColor color, const shipCoordinates_t<shipTypeCount>& compoundCoords) {
-  GameGrid& grid{ getGameGrid(color) };
+void Game::placeShips(const PlayerColor color,
+                      const shipCoordinates_t<shipTypeCount>& compoundCoords) {
+  GameGrid& grid{getGameGrid(color)};
 
   for (int i = 0; i < shipTypeCount; i++) {
     grid.fillCellsWithShip(compoundCoords[i]);
   }
 }
 
+ShipHitState Game::attackPoint(const PlayerColor attackerColor, Point point,
+                               bool& isShipSunk) {
+  Player& attacker{getPlayer(attackerColor)};
+  const PlayerColor defenderColor{attacker.opposeTeamColor()};
+  Player& defender{getPlayer(defenderColor)};
 
-ShipHitState Game::attackPoint(const PlayerColor attackerColor, Point point, bool& isShipSunk) {
-  Player& attacker{ getPlayer(attackerColor) };
-  const PlayerColor defenderColor{ attacker.opposeTeamColor() };
-  Player& defender{ getPlayer(defenderColor) };
-
-  GameGrid& defGameGrid{ getGameGrid(defenderColor) };
-  HintGrid& atkHintGrid{ getHintGrid(attackerColor) };
+  GameGrid& defGameGrid{getGameGrid(defenderColor)};
+  HintGrid& atkHintGrid{getHintGrid(attackerColor)};
   Ship* ship;
-  ShipHitState result{ defGameGrid.tryHitPoint(point, &ship) };
+
+  if (defGameGrid[point].shotDown)
+    return ShipHitState::ALREADY_HIT;
+  ShipHitState result{defGameGrid.tryHitPoint(point, &ship)};
 
   if (result == ShipHitState::HIT) {
     // It is a hit
@@ -60,13 +62,11 @@ ShipHitState Game::attackPoint(const PlayerColor attackerColor, Point point, boo
       ship->hasSunk = true;
       defender.remainingShipCount--;
 
-
       if (defender.remainingShipCount == 0) {
         endGame(attacker);
       }
     }
-  }
-  else if (result == ShipHitState::MISS) {
+  } else if (result == ShipHitState::MISS) {
     // It is a miss
     atkHintGrid[point].state = HintCellState::miss;
   }
@@ -79,10 +79,9 @@ void Game::endGame(const Player& winner) {
   winnerColor = winner.color;
 }
 
-bool Game::isGameEnded() {
-  return gameEnded;
-}
+bool Game::isGameEnded() { return gameEnded; }
 
-PlayerColor Game::getWinnerColor() {
-  return winnerColor;
-}
+PlayerColor Game::getWinnerColor() { return winnerColor; }
+
+void Game::setGameMode(GameMode gameMode) { this->gameMode = gameMode; }
+GameMode& Game::getGameMode() { return gameMode; }
