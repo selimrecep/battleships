@@ -1,5 +1,5 @@
 # Battleships
-  Just a small project wanted to create to practice C++
+  The classic battleships you know but it is uglier ;)
 
 # TODO List
 - [ ] Fix ConsoleBuffer class
