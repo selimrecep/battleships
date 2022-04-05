@@ -207,7 +207,8 @@ void GuiManager::oneRound(const PlayerColor color) {
 
   std::cout << "It is " << player.getPlayerName()
             << "'s turn. Other player should avert their eyes.\n";
-  sleep_for(seconds(0));
+  if (game.getGameMode() == GameMode::v2)
+    sleep_for(seconds(2));
 
   std::cout << "-------- YOUR SHIPS ------\n";
   printGameGrid(color);
